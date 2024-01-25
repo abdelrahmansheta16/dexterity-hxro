@@ -28,7 +28,18 @@ export const BasicsView: FC = ({ }) => {
       network == 'devnet' ? process.env.NEXT_PUBLIC_DEVNET_RPC! :
         network == 'mainnet-beta' ? process.env.NEXT_PUBLIC_MAINNET_RPC! :
           clusterApiUrl(network)
+      // Constructing our DexterityWallet from the Solana Wallet Adapter
+		const wallet: DexterityWallet = {
+      publicKey: publicKey!,
+      signTransaction,
+      signAllTransactions,
+    }
 
+		// Fetching the Manifest
+		const manifest = await dexterity.getManifest(rpc, true, wallet)
+    console.log(manifest)
+		// Setting our Manifest with our Global Context
+		setManifest(manifest)
     // Fetch for the Manifest
 
   }, [publicKey, network]);
@@ -44,6 +55,7 @@ export const BasicsView: FC = ({ }) => {
         <div className="text-center">
           <DefaultInfo />
           <SelectTraderAccounts />
+            {trader && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4">
               <div className="col-span-1 md:col-span-1 lg:col-span-1">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -51,15 +63,20 @@ export const BasicsView: FC = ({ }) => {
                     <PlaceLimitOrder />
                   </div>
                   <div>
-                  <FundingTrader />
+                    <FundingTrader />
                   </div>
                 </div>
-                <div className="mt-4"><OpenOrders /></div>
+                <div className="mt-4">
+                  <OpenOrders />
+                </div>
               </div>
               <div className="col-span-1 md:col-span-1 lg:col-span-1 gap-4">
-                <div className="mt-4"><AccountInfo /></div>
+                <div className="mt-4">
+                  <AccountInfo />
+                </div>
               </div>
             </div>
+          )}
         </div>
       </div>
     </div>
